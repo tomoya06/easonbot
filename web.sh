@@ -1,1 +1,1 @@
-cp database.db ./web/src/assets/database.db
+cp database.db ./web/public/database.db
