@@ -5,6 +5,14 @@ import initSqlJs from "sql.js";
 // Required to let webpack 4 know it needs to copy the wasm file to our assets
 import sqlWasm from "!!file-loader?name=sql-wasm-[contenthash].wasm!sql.js/dist/sql-wasm.wasm";
 
+/**
+ * 存一个能搜关键字的sql
+select lyrics.lyric, songs.song_name, albums.album_name from lyrics 
+inner join songs on lyrics.song_id = songs.song_id 
+inner join albums on albums.album_id = songs.album_id
+where lyrics.lyric like '%点解%' group by lyrics.lyric, lyrics.song_id limit 10
+ */
+
 export default function App() {
   const [db, setDb] = useState(null);
   const [error, setError] = useState(null);
