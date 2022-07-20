@@ -15,13 +15,15 @@
   },
   "devDependencies": {
     "@craco/craco": "^5.9.0",
+    "gh-pages": "^4.0.0",
     "typescript": "^4.5.5"
   },
   "scripts": {
     "start": "craco start",
     "build": "craco build",
     "test": "craco test --env=jsdom",
-    "eject": "craco eject"
+    "eject": "craco eject",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": [
     ">0.2%",
