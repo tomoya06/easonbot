@@ -1,16 +1,21 @@
-module.exports = {
-    webpack: {
-        configure: {
-            // See https://github.com/webpack/webpack/issues/6725
-            module: {
-                rules: [{
-                    test: /\.wasm$/,
-                    type: 'javascript/auto',
-                }]
-            },
+module.exports = (env) => {
+    console.log('Env: ', env);
+    const isDev = env.env === 'development';
 
-            output: {
-                publicPath: '/easonbot/'
+    return {
+        webpack: {
+            configure: {
+                // See https://github.com/webpack/webpack/issues/6725
+                module: {
+                    rules: [{
+                        test: /\.wasm$/,
+                        type: 'javascript/auto',
+                    }]
+                },
+    
+                output: {
+                    publicPath: isDev ? '' : '/easonbot/'
+                }
             }
         }
     }

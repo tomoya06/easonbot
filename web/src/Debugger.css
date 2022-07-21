@@ -1,0 +1,31 @@
+textarea {
+  font-size: 1.1em;
+  width: 70%;
+  display: block;
+  margin: auto;
+}
+
+table.debugtable {
+  border: 1px solid #1c6ea4;
+  background-color: #eeeeee;
+  width: 40%;
+  margin: 1.5em auto;
+  text-align: left;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.debugtable thead {
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #999;
+}
+
+.debugtable th,
+.debugtable td {
+  border: 1px solid #aaa;
+}
+
+.error {
+  color: #922;
+}
