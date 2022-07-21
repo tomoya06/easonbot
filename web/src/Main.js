@@ -45,6 +45,7 @@ const defaultTitle = '陈奕迅曾经唱过...';
  */
 export function Main({ db, switchDebug }) {
   const [error, setError] = useState(null);
+  const [isInput, setInput] = useState(false);
   const [results, setResults] = useState([]);
   const [keyword, setKeyword] = useState('');
 
@@ -78,7 +79,7 @@ export function Main({ db, switchDebug }) {
       setResults([]);
     }
   }
-  
+
   const inputStatus = useMemo(() => {
     if (!keyword) {
       return 0;
@@ -93,7 +94,7 @@ export function Main({ db, switchDebug }) {
     switch (inputStatus) {
       case 0: return '';
       case 1: return `陈奕迅曾经唱过 ${results.length} 句「${keyword}」`;
-      case 2: return `陈奕迅从来没唱过${keyword}！`;
+      case 2: return `陈奕迅从来没唱过${keyword}...`;
     }
   }, [inputStatus, keyword, results]);
 
@@ -105,15 +106,30 @@ export function Main({ db, switchDebug }) {
     }
   }, [inputStatus]);
 
+  const centerHeader = useMemo(() => {
+    if (isInput) {
+      return false;
+    }
+    if (inputStatus === 1) {
+      return false;
+    }
+    return true;
+  }, [inputStatus, isInput]);
+
   useEffect(() => {
     document.title = title || defaultTitle;
   }, [title]);
 
   return (
     <>
-      <article className="inputContainer">
+      <article className={"inputContainer " + (centerHeader ? 'centerContainer' : '')}>
         <img src={imgSrc} className="easonAvatar"></img>
-        <input placeholder={defaultTitle} onChange={e => exec(e.target.value)}></input>
+        <input
+          placeholder={defaultTitle}
+          onChange={e => exec(e.target.value)}
+          onFocus={() => setInput(true)}
+          onBlur={() => setInput(false)}
+        ></input>
       </article>
       <header>
         {title}
