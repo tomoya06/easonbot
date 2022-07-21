@@ -3,6 +3,15 @@ const { open } = require('sqlite');
 const glob = require('glob');
 const fs = require('fs');
 
+function findLastIndex(array, predicate, fromWhere = Number.MAX_SAFE_INTEGER) {
+  let l = Math.min(array.length, fromWhere);
+  while (l--) {
+    if (predicate(array[l], l, array))
+      return l;
+  }
+  return -1;
+}
+
 const connect = async () => {
   const db = await open({
     filename: './database.db',
@@ -54,25 +63,47 @@ const exec = async () => {
     );
 
     const lyrics = fs.readFileSync(songPath).toString();
-    const lyricLines = lyrics.split(/\n+/).filter(line => {
-      if (!line) {
-        return false;
-      }
-      if (/^\[\d+\:/.test(line)) {
-        return false;
-      }
-      if (/感谢.+歌词/.test(line)) {
-        return false;
-      }
-      if (line.includes('Mojim.com')) {
-        return false;
-      }
-      if (line === '陈奕迅') {
-        return false;
-      }
 
-      return true;
-    });
+    const lyricOgLines = lyrics.split(/\n+/);
+    const artistLineIdx = findLastIndex(
+      lyricOgLines,
+      line =>
+        ['作词：', '作曲：', '编曲：', '监制：', '主唱：', 'Text：', '和声：']
+          .some(prefix => line.startsWith(prefix)),
+      20
+    );
+    const titleLineIdx = lyricOgLines.findIndex(line => line === songName);
+    const startLineIdx = Math.max(artistLineIdx, titleLineIdx) + 1;
+
+    const lyricLines = lyricOgLines.splice(startLineIdx)
+      .map(line => line.replace(/[\*\(\)【】＃＊△★#＠@^　#＊]/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter(line => {
+        if (!line) {
+          return false;
+        }
+        if (/^\[/.test(line) || /^-{2,}/.test(line)) {
+          return false;
+        }
+        if (/^[<(]*[rR]ap[>)]*\s*:*$/.test(line)) {
+          return false;
+        }
+        if (/感谢.+歌词/.test(line) || /友站连结/.test(line)) {
+          return false;
+        }
+        if (/^rea*peat/.test(line.toLowerCase())) {
+          return false;
+        }
+        if (line.includes('Mojim.com')) {
+          return false;
+        }
+
+        return true;
+      });
+
+    if (!lyricLines.length) {
+      console.warn(`${songName} has no invalid lyrics`);
+      return;
+    }
 
     const placeholder = lyricLines.map(_l => `(?, ?)`).join(',');
     const values = lyricLines.map(_l => ([songRes.lastID, _l])).flat();
@@ -105,7 +136,7 @@ const exec = async () => {
   const insertAlbums = async () => {
     const albumRootDir = './lyrics/';
     const albums = fs.readdirSync(albumRootDir);
-    albums.slice(50).forEach(async (album) => {
+    albums.slice(0).forEach(async (album) => {
       await insertAlbum(`${albumRootDir}${album}`, album);
     });
   }
@@ -147,7 +178,9 @@ const removeAlbum = async (albumId) => {
   // debugger;
 }
 
-exec();
+createTable()
+  .then(() => {
+    exec();
+  })
 // removeAlbum(1);
 
-// createTable();
