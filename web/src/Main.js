@@ -37,6 +37,8 @@ function Row({ item }) {
   );
 }
 
+const defaultTitle = '陈奕迅曾经唱过...';
+
 /**
  * Main App
  * @param {{db: import("sql.js").Database, switchDebug: () => void}} props
@@ -76,38 +78,54 @@ export function Main({ db, switchDebug }) {
       setResults([]);
     }
   }
-
-  const title = useMemo(() => {
+  
+  const inputStatus = useMemo(() => {
     if (!keyword) {
-      return '陈奕迅曾经唱过...';
+      return 0;
     }
-
     if (results.length > 0) {
-      return `陈奕迅曾经唱过 ${results.length} 句「${keyword}」`;
+      return 1;
     }
-
-    return `陈奕迅从来没唱过${keyword}`;
+    return 2;
   }, [keyword, results]);
 
+  const title = useMemo(() => {
+    switch (inputStatus) {
+      case 0: return '';
+      case 1: return `陈奕迅曾经唱过 ${results.length} 句「${keyword}」`;
+      case 2: return `陈奕迅从来没唱过${keyword}！`;
+    }
+  }, [inputStatus, keyword, results]);
+
+  const imgSrc = useMemo(() => {
+    switch (inputStatus) {
+      case 0: return './img/waiting.jpg';
+      case 1: return `./img/cool.jpg`;
+      case 2: return `./img/nonono.jpg`;
+    }
+  }, [inputStatus]);
+
   useEffect(() => {
-    document.title = title;
+    document.title = title || defaultTitle;
   }, [title]);
 
   return (
     <>
-      <header>
-        <h1>{title}</h1>
-      </header>
-      <article>
-        <input placeholder="啊，你也忘词了吗..." onChange={e => exec(e.target.value)}></input>
+      <article className="inputContainer">
+        <img src={imgSrc} className="easonAvatar"></img>
+        <input placeholder={defaultTitle} onChange={e => exec(e.target.value)}></input>
       </article>
+      <header>
+        {title}
+      </header>
       <article>
         {results.map(item => (
           <Row key={JSON.stringify(item)} item={item} />
         ))}
       </article>
       <footer>
-        <h6>数据来源 <a href="https://mojim.com/" target="_blank">https://mojim.com/</a></h6>
+        歌词数据来源 <a href="https://mojim.com/" target="_blank">mojim.com</a> | 结果之准确性不归本站管
+        <br /><a href="https://github.com/tomoya06">github@tomoya06</a> © 2022
       </footer>
     </>
   )

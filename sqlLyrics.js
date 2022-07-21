@@ -68,7 +68,7 @@ const exec = async () => {
     const artistLineIdx = findLastIndex(
       lyricOgLines,
       line =>
-        ['作词：', '作曲：', '编曲：', '监制：', '主唱：', 'Text：', '和声：']
+        ['作词：', '作曲：', '编曲：', '监制：', '主唱：', 'Text：', '和声：', '演唱：', '改编词：']
           .some(prefix => line.startsWith(prefix)),
       20
     );
@@ -76,7 +76,7 @@ const exec = async () => {
     const startLineIdx = Math.max(artistLineIdx, titleLineIdx) + 1;
 
     const lyricLines = lyricOgLines.splice(startLineIdx)
-      .map(line => line.replace(/[\*\(\)【】＃＊△★#＠@^　#＊]/g, ' ').replace(/\s+/g, ' ').trim())
+      .map(line => line.replace(/[\*\(\)【】＃＊△★#＠@^　#＊=]/g, ' ').replace(/\s+/g, ' ').trim())
       .filter(line => {
         if (!line) {
           return false;
@@ -119,9 +119,10 @@ const exec = async () => {
    */
   const insertAlbum = async (albumPath, albumFolderName) => {
     const [year, albumName] = albumFolderName.split('_');
+    const inputYear = year || "未知年份";
     const albumRes = await db.run(
       `INSERT INTO albums (album_name, year) VALUES (?, ?)`,
-      year, albumName);
+      albumName, inputYear);
 
     if (!albumRes) {
       return;
