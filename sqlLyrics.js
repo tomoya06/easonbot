@@ -90,7 +90,7 @@ const exec = async () => {
         if (/感谢.+歌词/.test(line) || /友站连结/.test(line)) {
           return false;
         }
-        if (/^rea*peat/.test(line.toLowerCase())) {
+        if (/^rea*pea*t/.test(line.toLowerCase())) {
           return false;
         }
         if (line.includes('Mojim.com')) {
