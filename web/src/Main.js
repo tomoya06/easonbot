@@ -72,7 +72,10 @@ export function Main({ db, switchDebug }) {
     const sql = genSearchSql(word);
 
     try {
+      const startTime = Date.now();
       const searchResult = db.exec(sql);
+      console.log(`sql exec time: ${Date.now() - startTime}ms`);
+
       const parsedResult = parseResults(searchResult);
       setResults(parsedResult);
 
