@@ -3,7 +3,7 @@ export function genSearchSql(keyword) {
   select lyrics.lyric, songs.song_name, albums.album_name, albums.year from lyrics 
   inner join songs on lyrics.song_id = songs.song_id 
   inner join albums on albums.album_id = songs.album_id
-  where lyrics.lyric like '%${keyword}%' group by lyrics.lyric, lyrics.song_id`;
+  where lyrics.lyric like '%${keyword}%' group by lyrics.lyric, songs.song_name`;
 };
 
 export function parseResults(result) {

@@ -1,12 +1,14 @@
-article.inputContainer {
-  margin: 1em 0 0 0;
+.inputContainer {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   transition: margin 400ms;
+  margin-top: calc(30vh - 10em);
 }
 
-.inputContainer.centerContainer {
-  margin-top: calc(50vh - 10em);
+.inputContainer.topContainer {
+  /* margin-top: 1em; */
 }
 
 input {
@@ -28,6 +30,8 @@ input:focus {
 img.easonAvatar {
   width: 6em;
   height: 6em;
+  border-radius: 4px;
+  margin: 0 0 2em 0;
 }
 
 header {
@@ -40,14 +44,9 @@ header {
   margin: 2.0em 0;
 }
 
-.lyricRow div:first-child {
+.lyricRow .lyric {
   font-size: 1.2em;
-  font-weight: 600;
   margin: 0 0 0.2em 0;
-}
-
-.lyricRow div:last-child span {
-  font-style: italic;
 }
 
 

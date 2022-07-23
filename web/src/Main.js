@@ -16,7 +16,7 @@ function toast(msg) {
 
 function doCopy(item) {
   const { lyric, song_name, album_name, year } = item;
-  const copyText = `${lyric} ——《${album_name}》${song_name}, ${year}`;
+  const copyText = `${lyric} ——《${song_name}》, ${year}`;
   navigator.clipboard.writeText(copyText);
 
   toast(`歌词已复制：${copyText}`);
@@ -30,14 +30,17 @@ function Row({ item }) {
   const { lyric, song_name, album_name, year } = item;
 
   return (
-    <section className="lyricRow" onClick={() => doCopy(item)}>
-      <div>{lyric}</div>
-      <div>《{album_name}》 <span>{song_name}</span>, {year}</div>
-    </section>
+    <div
+      className="lyricRow"
+      onClick={() => doCopy(item)}>
+      <strong className="lyric">{lyric}</strong>
+      <div className="comment">《{song_name}》, {year}</div>
+    </div>
   );
 }
 
-const defaultTitle = '陈奕迅曾经唱过...';
+const dotlessTitle = '陈奕迅曾经唱过'
+const defaultTitle = `${dotlessTitle}...`;
 
 /**
  * Main App
@@ -45,9 +48,10 @@ const defaultTitle = '陈奕迅曾经唱过...';
  */
 export function Main({ db, switchDebug }) {
   const [error, setError] = useState(null);
-  const [isInput, setInput] = useState(false);
   const [results, setResults] = useState([]);
   const [keyword, setKeyword] = useState('');
+
+  const [phDots, setDots] = useState(2);
 
   /**
    * 搜索歌词
@@ -87,48 +91,55 @@ export function Main({ db, switchDebug }) {
     if (results.length > 0) {
       return 1;
     }
-    return 2;
+    return -1;
   }, [keyword, results]);
 
   const title = useMemo(() => {
     switch (inputStatus) {
       case 0: return '';
       case 1: return `陈奕迅曾经唱过 ${results.length} 句「${keyword}」`;
-      case 2: return `陈奕迅从来没唱过${keyword}...`;
+      case -1: return `陈奕迅从来没唱过${keyword}...`;
     }
   }, [inputStatus, keyword, results]);
+
+  const placeholder = useMemo(() => {
+    return `${dotlessTitle}${'.'.repeat(phDots + 1)}`;
+  }, [phDots]);
 
   const imgSrc = useMemo(() => {
     switch (inputStatus) {
       case 0: return './img/waiting.jpg';
       case 1: return `./img/cool.jpg`;
-      case 2: return `./img/nonono.jpg`;
+      case -1: return `./img/nonono.jpg`;
     }
   }, [inputStatus]);
-
-  const centerHeader = useMemo(() => {
-    if (isInput) {
-      return false;
-    }
-    if (inputStatus === 1) {
-      return false;
-    }
-    return true;
-  }, [inputStatus, isInput]);
 
   useEffect(() => {
     document.title = title || defaultTitle;
   }, [title]);
 
+  useEffect(() => {
+    const intv = setTimeout(() => {
+      setDots((phDots + 1) % 3);
+    }, 1000);
+
+    return () => {
+      clearTimeout(intv);
+    }
+  }, [phDots]);
+
   return (
     <>
-      <article className={"inputContainer " + (centerHeader ? 'centerContainer' : '')}>
+      <article className={"inputContainer " + (inputStatus === 1 ? 'topContainer' : '')}>
         <img src={imgSrc} className="easonAvatar"></img>
         <input
-          placeholder={defaultTitle}
+          placeholder={placeholder}
           onChange={e => exec(e.target.value)}
-          onFocus={() => setInput(true)}
-          onBlur={() => setInput(false)}
+          onKeyUp={e => {
+            if (e.key === 'Enter') {
+              e.target.blur();
+            }
+          }}
         ></input>
       </article>
       <header>
