@@ -21,9 +21,10 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "buildgh": "craco build --config craco.github.js",
     "test": "craco test --env=jsdom",
     "eject": "craco eject",
-    "deploy": "npm run build && gh-pages -d build"
+    "deploy": "npm run buildgh && gh-pages -d build"
   },
   "browserslist": [
     ">0.2%",

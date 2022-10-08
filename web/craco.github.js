@@ -1,4 +1,5 @@
 module.exports = (env) => {
+
     return {
         webpack: {
             configure: {
@@ -10,6 +11,9 @@ module.exports = (env) => {
                     }]
                 },
 
+                output: {
+                    publicPath: '/easonbot/',
+                }
             }
         }
     }
